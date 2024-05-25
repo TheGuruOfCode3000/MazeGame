@@ -35,11 +35,11 @@ int maze[LY][LX] = { // это наш лабиринт, структура та 
     {1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
 };
 
-// переменные их консольной версии игры
+// переменные из консольной версии игры
 int score = 0; // счет игры
-
+int blink = 0;
 int gameState = 0; // 0 - игра продолжается, 1 - выигрыш, 2 - закончилось время
-sf::Time timeLimit = sf::milliseconds(90000); // лимит игры в миллисекундах
+sf::Time timeLimit = sf::milliseconds(20000); // лимит игры в миллисекундах
 sf::Time gameTime; // оставшееся время
 sf::Time elapsedTime; // счетчик прошедшего времени
 sf::Clock gameClock; // таймер
@@ -135,6 +135,8 @@ void UpdateScore(int score)
 {
     dashboardText.setString(to_string(score)); // устанавливаем текст для вывода to_string переводит число в строковое представление
     dashboardText.setPosition(scoreTextPosition); // устанавливаем позицию текста для счета
+    dashboardText.setFillColor(sf::Color::Green);
+    dashboardText.setOutlineColor(sf::Color::Green);
     window.draw(dashboardText); // отрисовываем текст в буфере кадра
 }
 
@@ -144,7 +146,15 @@ void UpdateClock(sf::Time elapsed)
     gameTime = timeLimit - elapsed; /* вычисляем оставшееся время в секундах
                     timeLimit - лимит времени, elapsed - прошедшее время с момента старта игры 
                     */
-    if (gameTime.asSeconds() < 0) // проверяем, закончилось ли время
+    if (gameTime.asSeconds() <= 15)
+    {
+        dashboardText.setPosition(timeTextPosition);
+        dashboardText.setFillColor(sf::Color::Red);
+        dashboardText.setOutlineColor(sf::Color::Red);
+        dashboardText.setString(to_string((int)gameTime.asSeconds()));
+        window.draw(dashboardText); // отрисовываем текст в буфере кадра
+    }
+    else if (gameTime.asSeconds() < 0) // проверяем, закончилось ли время
                                     // gameTime.asSeconds() - превращает время из объекта Time в секунды
     {
         gameState = 2; // если да, то обновляем статус игры на 2 - игрок ПРОИГРАЛ
@@ -155,6 +165,8 @@ void UpdateClock(sf::Time elapsed)
         // устанавливаем текст для вывода to_string переводит число в строковое представление
         // для получения времени в секундах используем функцию asSeconds. Она возвращает float
         // поэтому явно преобразуем ее в int, иначе возможны десятичные дроби при выводе оставшегося времени
+        dashboardText.setFillColor(sf::Color::Green);
+        dashboardText.setOutlineColor(sf::Color::Green);
         dashboardText.setString(to_string((int)gameTime.asSeconds()));
         window.draw(dashboardText); // отрисовываем текст в буфере кадра
     }
@@ -361,11 +373,25 @@ void ShowMessageWindow(string message,int width = 600, int heigth = 300, sf::Col
 
 void RenderScene()
 {
+    blink = blink + 1;
     window.draw(backgroundSprite);  // отрисовываем спрайт с фоновым изображением в буфере кадра
     RedrawMaze(maze, LX, LY); // отрисовка лабиринта
     window.draw(headerText); // Выводим заголовок игры
     window.draw(scoreSprite); // Выводим спрайт счета
-    window.draw(timerSprite); // Выводим спрайт времени
+    if (gameTime.asSeconds() <= 15)
+    {
+        if (blink % 10 < 5)
+        {
+            window.draw(timerSprite);
+        }
+        else if (blink % 10 >= 5)
+        {
+        }
+    }
+    else
+    {
+        window.draw(timerSprite); // Выводим спрайт времени
+    }
     UpdateScore(score); // обновляем текст счета
     UpdateClock(gameClock.getElapsedTime()); // обновляем оставшееся время игры
 }
