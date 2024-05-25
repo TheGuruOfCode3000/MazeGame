@@ -39,7 +39,7 @@ int maze[LY][LX] = { // это наш лабиринт, структура та 
 int score = 0; // счет игры
 int blink = 0;
 int gameState = 0; // 0 - игра продолжается, 1 - выигрыш, 2 - закончилось время
-sf::Time timeLimit = sf::milliseconds(20000); // лимит игры в миллисекундах
+sf::Time timeLimit = sf::milliseconds(90000); // лимит игры в миллисекундах
 sf::Time gameTime; // оставшееся время
 sf::Time elapsedTime; // счетчик прошедшего времени
 sf::Clock gameClock; // таймер
