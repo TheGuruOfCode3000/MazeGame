@@ -146,18 +146,18 @@ void UpdateClock(sf::Time elapsed)
     gameTime = timeLimit - elapsed; /* вычисляем оставшееся время в секундах
                     timeLimit - лимит времени, elapsed - прошедшее время с момента старта игры 
                     */
-    if (gameTime.asSeconds() <= 15)
+    if (gameTime.asSeconds() < 0) // проверяем, закончилось ли время
+        // gameTime.asSeconds() - превращает время из объекта Time в секунды
+    {
+        gameState = 2; // если да, то обновляем статус игры на 2 - игрок ПРОИГРАЛ
+    }
+    else if (gameTime.asSeconds() <= 15)
     {
         dashboardText.setPosition(timeTextPosition);
         dashboardText.setFillColor(sf::Color::Red);
         dashboardText.setOutlineColor(sf::Color::Red);
         dashboardText.setString(to_string((int)gameTime.asSeconds()));
         window.draw(dashboardText); // отрисовываем текст в буфере кадра
-    }
-    else if (gameTime.asSeconds() < 0) // проверяем, закончилось ли время
-                                    // gameTime.asSeconds() - превращает время из объекта Time в секунды
-    {
-        gameState = 2; // если да, то обновляем статус игры на 2 - игрок ПРОИГРАЛ
     }
     else
     {   // если время осталось
